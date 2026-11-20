@@ -22,8 +22,14 @@ RUN uv sync --frozen --no-dev --no-editable
 
 # ── 3. Runtime: no build tools, no uv, non-root ───────────────────────────────
 FROM python:3.13-slim
-RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/* \
- && useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin radar
+# pip/setuptools ship in the base image with vendored libraries (urllib3,
+# msgpack…) that lag on security fixes. The app never installs anything at
+# runtime, so remove them: less attack surface, fewer CVEs.
+RUN set -eux; \
+    apt-get update; apt-get upgrade -y; rm -rf /var/lib/apt/lists/*; \
+    python -m pip uninstall -y pip setuptools wheel || true; \
+    rm -rf /usr/local/lib/python3.13/site-packages/pip* /usr/local/lib/python3.13/site-packages/setuptools* /usr/local/bin/pip*; \
+    useradd --uid 10001 --no-create-home --shell /usr/sbin/nologin radar
 WORKDIR /app
 COPY --from=deps --chown=root:root /app/.venv /app/.venv
 COPY --from=web --chown=root:root /web/dist /app/web
