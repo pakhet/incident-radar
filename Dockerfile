@@ -12,7 +12,7 @@ COPY web/ ./
 RUN npm run build
 
 # ── 2. Resolve Python dependencies from the lockfile ──────────────────────────
-FROM python:3.13-slim AS deps
+FROM python:3.15-slim AS deps
 COPY --from=ghcr.io/astral-sh/uv:0.13.9 /uv /usr/local/bin/uv
 ENV UV_COMPILE_BYTECODE=1 UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=never
 WORKDIR /app
@@ -21,7 +21,7 @@ COPY src ./src
 RUN uv sync --frozen --no-dev --no-editable
 
 # ── 3. Runtime: no build tools, no uv, non-root ───────────────────────────────
-FROM python:3.13-slim
+FROM python:3.15-slim
 # pip/setuptools ship in the base image with vendored libraries (urllib3,
 # msgpack…) that lag on security fixes. The app never installs anything at
 # runtime, so remove them: less attack surface, fewer CVEs.
