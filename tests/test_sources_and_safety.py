@@ -116,3 +116,18 @@ def test_api_sets_security_headers_and_rejects_writes(tmp_path, monkeypatch):
     assert r.headers["x-content-type-options"] == "nosniff"
     assert c.post("/api/incidents").status_code == 405
     assert c.get("/feed.xml").headers["content-type"].startswith("application/atom+xml")
+
+
+def test_clean_urls_serve_html_pages(tmp_path, monkeypatch):
+    import importlib
+
+    (tmp_path / "index.html").write_text("home")
+    (tmp_path / "how-it-works.html").write_text("method")
+    monkeypatch.setenv("WEB_DIR", str(tmp_path))
+    from radar import api
+
+    api = importlib.reload(api)
+    c = TestClient(api.app)
+    assert c.get("/").text == "home"
+    assert c.get("/how-it-works").text == "method"
+    assert c.get("/nope").status_code == 404
