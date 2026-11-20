@@ -1,0 +1,36 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base script="/app.js">
+  <section class="hero">
+    <div>
+      <p class="eyebrow">Live · rescanned every 15 minutes</p>
+      <h1>Incident Radar</h1>
+      <p class="muted">Major security events, scored and explained. Exploited vulnerabilities, critical CVEs, and big breaches, the moment they break.</p>
+      <p class="statusline" id="status"><span>Loading latest scan…</span></p>
+    </div>
+    <svg class="radar-sweep" viewBox="0 0 132 132" aria-hidden="true">
+      <circle cx="66" cy="66" r="62" /><circle cx="66" cy="66" r="42" /><circle cx="66" cy="66" r="22" />
+      <line x1="66" y1="2" x2="66" y2="130" /><line x1="2" y1="66" x2="130" y2="66" />
+      <path class="beam" d="M66 66 L66 4 A62 62 0 0 1 119.7 35 Z" />
+      <circle class="blip" cx="96" cy="40" r="4" />
+    </svg>
+  </section>
+
+  <div class="filters" role="group" aria-label="Filter by level" id="filters" hidden>
+    <button class="chip" type="button" data-level="all" aria-pressed="true">all<span class="n" id="n-all"></span></button>
+    <button class="chip" type="button" data-level="critical" aria-pressed="false">critical<span class="n" id="n-critical"></span></button>
+    <button class="chip" type="button" data-level="high" aria-pressed="false">high<span class="n" id="n-high"></span></button>
+    <button class="chip" type="button" data-level="elevated" aria-pressed="false">elevated<span class="n" id="n-elevated"></span></button>
+  </div>
+
+  <ol class="incidents" id="incidents" aria-live="polite"></ol>
+
+  <noscript>
+    <div class="card empty">
+      <p>The live dashboard needs JavaScript. You can read the same data without it:</p>
+      <p><a href="/feed.xml">Atom feed</a> · <a href="/api/incidents">JSON</a></p>
+    </div>
+  </noscript>
+</Base>

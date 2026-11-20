@@ -1,0 +1,74 @@
+---
+import Base from '../layouts/Base.astro';
+
+const signals: [string, string, string][] = [
+  ['Confirmed exploited in the wild (CISA KEV)', '+35', 'The strongest signal: CISA has evidence of real attacks.'],
+  ['Known use in ransomware campaigns', '+10', 'From the KEV catalog.'],
+  ['Critical severity (CVSS ≥ 9.0)', '+20', '+8 for CVSS 7.0–8.9.'],
+  ['High exploitation probability (EPSS ≥ 50%)', '+20', '+8 for EPSS 10–49%. EPSS predicts exploitation within 30 days.'],
+  ['Covered by multiple news outlets', '+8 each', 'Up to 5 outlets (+40). Coverage breadth is what makes a story "big".'],
+  ['Trending: 4+ outlets in 24 hours', '+10', 'Velocity: a fast-moving story.'],
+  ['Official vendor or government advisory', '+10', 'Vendor PSIRTs and CISA advisories.'],
+  ['Exploitation language', '+15', '"actively exploited", "zero-day"… Ignored when negated ("no evidence of…") or asked as a question.'],
+  ['High-impact language', '+8 each', 'RCE, unauthenticated, supply chain, ransomware, data breach… (up to 2).'],
+  ['Large-scale language', '+8', '"millions", "nation-state", "critical infrastructure"…'],
+  ['Public proof-of-concept', '+5', 'Exploit code is out, so attacks usually follow.'],
+  ['Watchlist match', '+10', 'Web servers and proxies, cloud and containers, identity and email, edge and VPN appliances.'],
+  ['Single source, uncorroborated', 'capped at 35', 'One article alone can never raise an alert.'],
+];
+const levels: [string, string][] = [
+  ['Critical', '80–100'],
+  ['High', '60–79'],
+  ['Elevated', '40–59'],
+  ['Info (not shown)', '0–39'],
+];
+---
+
+<Base title="How it works" script="/health.js">
+  <div class="prose">
+    <p class="eyebrow">Methodology</p>
+    <h1>How it works</h1>
+    <p class="muted">Every 15 minutes a collector pulls from authoritative sources, groups reports about the same event into one incident, and scores it. Every point is shown, so you can judge the score for yourself.</p>
+
+    <h2 class="section">1. Collect</h2>
+    <p>Sources:</p>
+    <ul>
+      <li><strong>CISA KEV:</strong> confirmed exploited vulnerabilities</li>
+      <li><strong>NVD:</strong> newly published CVEs scored CVSS 9.0 or higher</li>
+      <li><strong>GitHub Advisories:</strong> critical vulnerabilities in open source packages</li>
+      <li><strong>FIRST EPSS:</strong> exploitation probability for every CVE</li>
+      <li><strong>Security news:</strong> BleepingComputer, The Hacker News, SecurityWeek, Help Net Security, The Record, Cybersecurity Dive, Krebs on Security, SANS ISC</li>
+      <li><strong>Vendor and government advisories:</strong> CISA, Microsoft, Cisco, Palo Alto Networks, Fortinet</li>
+    </ul>
+
+    <h2 class="section">2. Cluster</h2>
+    <p>Reports describe the same event if they share a CVE ID, or (within 72 hours) if their headlines share enough distinctive words. A coined nickname like <code>nginx2root</code> or <code>log4shell</code> is enough on its own. That's how a breach with no CVE at all still gets recognized as one big story. Digest articles that cite many CVEs are kept from gluing unrelated bugs together.</p>
+
+    <h2 class="section">3. Score</h2>
+    <div class="scroll-x">
+      <table class="table">
+        <thead><tr><th>Signal</th><th>Points</th><th>Notes</th></tr></thead>
+        <tbody>{signals.map(([s, p, n]) => <tr><td>{s}</td><td class="num">{p}</td><td class="muted">{n}</td></tr>)}</tbody>
+      </table>
+    </div>
+    <p class="muted">Scores are capped at 100.</p>
+    <div class="scroll-x">
+      <table class="table">
+        <thead><tr><th>Level</th><th>Score</th></tr></thead>
+        <tbody>{levels.map(([l, s]) => <tr><td>{l}</td><td class="num">{s}</td></tr>)}</tbody>
+      </table>
+    </div>
+
+    <h2 class="section">4. Alert</h2>
+    <p>An alert fires once when an incident reaches a level, and again only if it escalates. The first run after a reset builds state silently, so it never floods you with old news.</p>
+
+    <h2 class="section">Source health</h2>
+    <p class="muted">Live status from the latest scan. A failing source is skipped and never stops the scan.</p>
+    <div class="scroll-x">
+      <table class="table">
+        <thead><tr><th>Source</th><th>Status</th><th>Items</th><th>Last success</th></tr></thead>
+        <tbody id="health"><tr><td colspan="4" class="muted">Loading…</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</Base>

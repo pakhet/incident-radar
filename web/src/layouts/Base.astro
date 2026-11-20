@@ -1,0 +1,73 @@
+---
+import '../styles/global.css';
+import '../styles/radar.css';
+import CatLogo from '../components/CatLogo.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  script?: string;
+}
+
+const PORTFOLIO = 'https://pakhet-portfolio.web.app';
+const {
+  title,
+  description = 'Explainable early warning for major security events: exploited vulnerabilities, critical CVEs, and big breaches, scored from CISA KEV, NVD, vendors, and the security press.',
+  script,
+} = Astro.props;
+const fullTitle = title ? `${title} · Incident Radar` : 'Incident Radar';
+const path = Astro.url.pathname;
+const nav = [
+  { href: '/', label: 'dashboard' },
+  { href: '/subscribe', label: 'subscribe' },
+  { href: '/how-it-works', label: 'how it works' },
+];
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" type="application/atom+xml" title="Incident Radar" href="/feed.xml" />
+    <script is:inline src="/theme.js"></script>
+    {script && <script is:inline type="module" src={script}></script>}
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header">
+      <div class="wrap bar">
+        <a class="brand" href="/" aria-label="Incident Radar home">
+          <CatLogo />
+          <span class="mono">incident<span class="accent">_</span>radar</span>
+        </a>
+        <div class="right">
+          <nav aria-label="Primary">
+            {nav.map((n) => (
+              <a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a>
+            ))}
+          </nav>
+          <button id="theme-toggle" class="toggle" type="button" hidden aria-label="Toggle color theme">
+            <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" /></svg>
+            <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5" /><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" /></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+    <main id="main" class="wrap">
+      <slot />
+    </main>
+    <footer class="wrap site-footer muted">
+      <span class="mono">Built and run by <a href={PORTFOLIO}>Rachel Coleman</a> · not a substitute for your vendor advisories</span>
+      <span class="links">
+        <a href="/feed.xml">RSS</a>
+        <a href="https://github.com/pakhet/incident-radar" rel="noopener noreferrer" target="_blank">Source</a>
+      </span>
+    </footer>
+  </body>
+</html>

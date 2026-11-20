@@ -1,0 +1,14 @@
+{
+  "name": "incident-radar-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.12",
+    "astro": "^7.4.13",
+    "typescript": "^6.0.3"
+  }
+}

@@ -1,0 +1,29 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Subscribe">
+  <div class="prose">
+    <p class="eyebrow">Never miss the next one</p>
+    <h1>Subscribe</h1>
+    <p class="muted">No account, no email address, no tracking. Subscribe anonymously with whatever you already use.</p>
+
+    <h2 class="section">RSS / Atom feed</h2>
+    <div class="card hud">
+      <p class="mono"><a href="/feed.xml">/feed.xml</a></p>
+      <p class="muted">Add this to any feed reader (Feedly, Inoreader, NetNewsWire, Thunderbird…), or to Slack or Teams with their RSS integrations. It includes every incident scored <strong>elevated</strong> or higher, with the full score breakdown.</p>
+    </div>
+
+    <h2 class="section">JSON API</h2>
+    <div class="card">
+      <p class="mono"><a href="/api/incidents">/api/incidents</a></p>
+      <p class="muted">The same data as the dashboard, for your own scripts and SOAR playbooks. It's cached for about a minute, so please poll no more than once every few minutes.</p>
+    </div>
+
+    <h2 class="section">Phone push notifications</h2>
+    <div class="card">
+      <p><span class="status">Coming soon</span></p>
+      <p class="muted">Public push alerts are on the way. They're held back on purpose: on open push services, anyone who knows a topic name can post to it, which would let someone send fake "critical" alerts to subscribers. Public push will launch once publishing can be locked down so only Incident Radar can send.</p>
+    </div>
+  </div>
+</Base>

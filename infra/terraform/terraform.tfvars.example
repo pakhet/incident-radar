@@ -1,0 +1,4 @@
+project_id           = "your-radar-project"
+github_repository_id = "123456789"
+dashboard_url        = "https://your-radar-project.web.app"
+billing_account_id   = "XXXXXX-XXXXXX-XXXXXX"
