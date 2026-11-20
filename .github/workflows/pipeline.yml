@@ -87,6 +87,7 @@ jobs:
           ! echo "$h" | grep -qi '^server:'
           curl -fsS http://127.0.0.1:8080/ | grep -q 'Incident Radar'
           curl -fsS http://127.0.0.1:8080/feed.xml | grep -q '<feed'
+          for p in how-it-works subscribe .well-known/security.txt; do curl -fsS "http://127.0.0.1:8080/$p" >/dev/null; done
           test "$(curl -s -o /dev/null -w '%{http_code}' -X POST http://127.0.0.1:8080/api/incidents)" = 405
           docker exec radar id -u | grep -qx 10001
 

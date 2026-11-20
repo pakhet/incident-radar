@@ -10,6 +10,7 @@ import time
 from pathlib import Path
 
 from starlette.applications import Starlette
+from starlette.exceptions import HTTPException
 from starlette.middleware import Middleware
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
@@ -82,6 +83,18 @@ class Hardening(BaseHTTPMiddleware):
         return resp
 
 
+class CleanUrlStaticFiles(StaticFiles):
+    """Serve /how-it-works from how-it-works.html (Astro's file-format output)."""
+
+    async def get_response(self, path: str, scope):
+        try:
+            return await super().get_response(path, scope)
+        except HTTPException as e:
+            if e.status_code != 404 or not path or "." in Path(path).name:
+                raise
+            return await super().get_response(f"{path}.html", scope)
+
+
 WEB_DIR = Path(os.environ.get("WEB_DIR", Path(__file__).resolve().parents[2] / "web" / "dist"))
 routes = [
     Route("/api/incidents", incidents),
@@ -89,6 +102,6 @@ routes = [
     Route("/healthz", healthz),
 ]
 if WEB_DIR.is_dir():
-    routes.append(Mount("/", app=StaticFiles(directory=WEB_DIR, html=True)))
+    routes.append(Mount("/", app=CleanUrlStaticFiles(directory=WEB_DIR, html=True)))
 
 app = Starlette(routes=routes, middleware=[Middleware(Hardening)])
